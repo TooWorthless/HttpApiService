@@ -6,38 +6,38 @@ const apiController = {};
 
 apiController.postJson = (req, res, next) => {
     try {
-        console.log('req.body :>> ', req.body);
-        res.status(200).send(`Received JSON:\n${JSON.stringify(req.body)}`);
+        const message = JSON.stringify(req.body);
+
+
+        res.status(200).send(`Received JSON:\n${message}`);
+
 
         amqp.connect(
-            `amqp://${process.env.rabbitmq_username}:${process.env.rabbitmq_password}@127.0.0.1:5672`,
-            (error0, connection) => {
-                if (error0) {
-                    throw error0;
+            `amqp://${process.env.rabbitmq_username}:${process.env.rabbitmq_password}@${process.env.IP}:${process.env.AMQP_PORT}`,
+            (amqpConnectionError, connection) => {
+                if (amqpConnectionError) {
+                    throw amqpConnectionError;
                 }
 
-                connection.createChannel((error1, channel) => {
-                    if (error1) {
-                        throw error1;
+                connection.createChannel((creatingChannelError, channel) => {
+                    if (creatingChannelError) {
+                        throw creatingChannelError;
                     }
-                    var queue = 'Test queue 1';
-                    var msg = JSON.stringify(req.body);
 
-                    channel.assertQueue(queue, {
+                    const exchange = 'messages';
+
+                    channel.assertExchange(exchange, 'fanout', {
                         durable: false
                     });
-
-                    channel.sendToQueue(queue, Buffer.from(msg));
-                    console.log('[x] Sent %s', msg);
+                    channel.publish(exchange, '', Buffer.from(message));
+                    console.log(" [x] Sent %s", message);
                 });
 
                 setTimeout(() => {
                     connection.close();
-                }, 1000);
+                }, 500);
             }
         );
-
-        // throw new Error('Test Error');
     } catch (error) {
         next(error);
     }
