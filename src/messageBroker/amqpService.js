@@ -1,7 +1,9 @@
 import amqp from 'amqplib';
 
 
+
 class AMQPService {
+
     constructor() {
         this.connection = null;
         this.channel = null;
@@ -13,14 +15,14 @@ class AMQPService {
             this.connection = await amqp.connect(
                 `amqp://${process.env.rabbitmq_username}:${process.env.rabbitmq_password}@${process.env.IP}:${process.env.AMQP_PORT}`
             );
-
             this.channel = await this.connection.createChannel();
 
             const exchange = 'messages';
-
-            this.channel.assertExchange(exchange, 'fanout', {
-                durable: false
-            });
+            this.channel.assertExchange(
+                exchange, 
+                'fanout', 
+                { durable: false }
+            );
         } catch (error) {
             console.error('Error connecting to AMQP :>> ', error.stack);
             throw error;
@@ -49,7 +51,9 @@ class AMQPService {
             }, 1000);
         }
     }
+    
 }
+
 
 
 export {
