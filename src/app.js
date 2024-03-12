@@ -1,10 +1,10 @@
 import express from 'express';
 import dotenv from 'dotenv';
+dotenv.config();
 
 import { logErrors, errorHandler } from './utils.js';
 import { apiRouter } from './api/api.router.js';
 
-dotenv.config();
 
 const PORT = process.env.PORT;
 
