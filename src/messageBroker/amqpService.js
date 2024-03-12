@@ -44,7 +44,7 @@ class AMQPService {
                 try {
                     this.connection.close();
                 } catch (error) {
-                    console.error('Error closing AMQP connection:', error.stack);
+                    console.error('Error closing AMQP connection :>> ', error.stack);
                 }
             }, 1000);
         }
