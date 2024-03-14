@@ -20,7 +20,7 @@ class AMQPService {
             const exchange = 'messages';
             this.channel.assertExchange(
                 exchange, 
-                'fanout', 
+                'direct', 
                 { durable: false }
             );
         } catch (error) {
@@ -30,12 +30,13 @@ class AMQPService {
     }
 
 
-    publish(message) {
+    publish(message, key='forBroadcast') {
         if(!this.channel) {
             throw new Error('Channel not initialized. Please call connect() first.');
         }
 
-        this.channel.publish('messages', '', Buffer.from(message));
+        const exchange = 'messages';
+        this.channel.publish(exchange, key, Buffer.from(message));
         console.log(" [x] Sent %s", message);
     }
 
