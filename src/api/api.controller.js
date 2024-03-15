@@ -1,3 +1,5 @@
+import { amqpService } from '../messageBroker/amqpService.js';
+import { db } from '../database/main.js';
 
 
 const apiController = {};
@@ -12,7 +14,7 @@ apiController.postDirectMessage = async (req, res, next) => {
         res.status(200).send(`Received JSON:\n${JSON.stringify(data)}`);
 
 
-        const savedMessage = await process.db.Message.create({
+        const savedMessage = await db.Message.create({
             message: data.message,
             receiver: data.receiverKey
         });
@@ -25,7 +27,7 @@ apiController.postDirectMessage = async (req, res, next) => {
         });
 
 
-        process.amqpService.publish(messageToPublish, data.receiverKey);
+        amqpService.publish(messageToPublish, data.receiverKey);
         
     } catch (error) {
         next(error);
@@ -41,7 +43,7 @@ apiController.postBroadcastMessage = async (req, res, next) => {
         res.status(200).send(`Received JSON:\n${JSON.stringify(data)}`);
 
 
-        const savedMessage = await process.db.Message.create({
+        const savedMessage = await db.Message.create({
             message: data.message
         });
         
@@ -51,7 +53,7 @@ apiController.postBroadcastMessage = async (req, res, next) => {
         });
 
 
-        process.amqpService.publish(messageToPublish);
+        amqpService.publish(messageToPublish);
 
     } catch (error) {
         next(error);

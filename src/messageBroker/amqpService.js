@@ -1,4 +1,6 @@
 import amqp from 'amqplib';
+import dotenv from 'dotenv';
+dotenv.config();
 
 
 
@@ -12,8 +14,10 @@ class AMQPService {
 
     async connect() {
         try {
+            const { rabbitmq_username, rabbitmq_password, IP, AMQP_PORT } = process.env;
+
             this.connection = await amqp.connect(
-                `amqp://${process.env.rabbitmq_username}:${process.env.rabbitmq_password}@${process.env.IP}:${process.env.AMQP_PORT}`
+                `amqp://${rabbitmq_username}:${rabbitmq_password}@${IP}:${AMQP_PORT}`
             );
             this.channel = await this.connection.createChannel();
 
@@ -37,7 +41,7 @@ class AMQPService {
 
         const exchange = 'messages';
         this.channel.publish(exchange, key, Buffer.from(message));
-        console.log(" [x] Sent %s", message);
+        console.log(' [x] Sent %s', message);
     }
 
 
@@ -57,6 +61,11 @@ class AMQPService {
 
 
 
+const amqpService = new AMQPService();
+await amqpService.connect();
+
+
+
 export {
-    AMQPService
+    amqpService
 };

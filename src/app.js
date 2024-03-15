@@ -4,19 +4,12 @@ dotenv.config();
 
 import { logErrors, errorHandler } from './utils.js';
 import { apiRouter } from './api/api.router.js';
-import { AMQPService } from './messageBroker/amqpService.js';
+import { amqpService } from './messageBroker/amqpService.js';
 
 import { db } from './database/main.js';
-process.db = db;
 
 
 const PORT = process.env.PORT;
-
-
-
-const amqpService = new AMQPService();
-await amqpService.connect();
-process.amqpService = amqpService;
 
 
 
@@ -38,7 +31,7 @@ app.use(errorHandler);
 
 
 
-process.on('exit', (code) => {
+process.on('exit', () => {
     amqpService.channel.close();
 });
 
